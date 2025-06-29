@@ -1,693 +1,99 @@
 import 'package:flutter/material.dart';
+import 'signup.dart';
 
-// Auth State Model using ChangeNotifier (built into Flutter)
-class AuthState extends ChangeNotifier {
-  bool _isLoggedIn = false;
-  bool _isLoading = false;
-  String? _user;
-  String? _errorMessage;
-  bool _agreeToTerms = false;
-
-  bool get isLoggedIn => _isLoggedIn;
-  bool get isLoading => _isLoading;
-  String? get user => _user;
-  String? get errorMessage => _errorMessage;
-  bool get agreeToTerms => _agreeToTerms;
-
-  void setAgreeToTerms(bool value) {
-    _agreeToTerms = value;
-    notifyListeners();
-  }
-
-  Future<void> register(String name, String email, String password) async {
-    if (!_agreeToTerms) {
-      _errorMessage = 'Please agree to the Terms of Service & Privacy Policy';
-      notifyListeners();
-      return;
-    }
-
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Simple validation (replace with real auth logic)
-      if (name.isNotEmpty && email.isNotEmpty && password.length >= 6) {
-        _isLoggedIn = true;
-        _user = name;
-        _errorMessage = null;
-      } else {
-        throw Exception('Please fill all fields correctly');
-      }
-    } catch (e) {
-      _errorMessage = e.toString().replaceFirst('Exception: ', '');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> signInWithGoogle() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-      _isLoggedIn = true;
-      _user = "Google User";
-      _errorMessage = null;
-    } catch (e) {
-      _errorMessage = "Google sign-in failed";
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> signInWithFacebook() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-      _isLoggedIn = true;
-      _user = "Facebook User";
-      _errorMessage = null;
-    } catch (e) {
-      _errorMessage = "Facebook sign-in failed";
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  void logout() {
-    _isLoggedIn = false;
-    _user = null;
-    _errorMessage = null;
-    _agreeToTerms = false;
-    notifyListeners();
-  }
-
-  void clearError() {
-    _errorMessage = null;
-    notifyListeners();
-  }
-}
-
-// Global instance of AuthState
-final AuthState authState = AuthState();
-
-// Main App
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NutriTrack Mama',
+      title: 'Intro page',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primaryColor: const Color(0xFF91C788),
         useMaterial3: true,
-        fontFamily: 'SF Pro Display', // iOS-like font
+        fontFamily: 'SF Pro Display',
       ),
-      home: const AuthWrapper(),
+      home: IntroPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-// Auth Wrapper to handle navigation based on auth state
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
-  @override
-  void initState() {
-    super.initState();
-    // Listen to auth state changes
-    authState.addListener(_onAuthStateChanged);
-  }
-
-  @override
-  void dispose() {
-    authState.removeListener(_onAuthStateChanged);
-    super.dispose();
-  }
-
-  void _onAuthStateChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (authState.isLoggedIn) {
-      return const BlankPage(); // Changed from HomePage to BlankPage
-    } else {
-      return const SignUpPage();
-    }
-  }
-}
-
-// Sign Up Page matching the Figma design
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
-
-  @override
-  State<SignUpPage> createState() => _SignUpPageState();
-}
-
-class _SignUpPageState extends State<SignUpPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    // Listen to auth state changes
-    authState.addListener(_onAuthStateChanged);
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    authState.removeListener(_onAuthStateChanged);
-    super.dispose();
-  }
-
-  void _onAuthStateChanged() {
-    setState(() {});
-  }
-
+class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFF91C788),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 80),
-
-              // Logo Image
-              Container(
-                width: 120,
-                height: 60,
-                child: Image.asset(
-                  'assets/images/logo.jpg',
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              const SizedBox(height: 60),
-
-              // Error Message
-              if (authState.errorMessage != null)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red[200]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: Colors.red[700],
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          authState.errorMessage!,
-                          style: TextStyle(
-                            color: Colors.red[700],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => authState.clearError(),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.red[700],
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              Form(
-                key: _formKey,
+        child: Column(
+          children: [
+            // Main content area
+            Expanded(
+              child: Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Name Field
+                    // App logo or icon
                     Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                      ),
-                      child: TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          hintText: 'Name',
-                          hintStyle: TextStyle(
-                            color: Color(0xFF9CA3AF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
-                          }
-                          return null;
-                        },
+                      width: 250,
+                      height: 120,
+                      child: Image.asset(
+                        'assets/images/logo1.png',
+                        fit: BoxFit.contain,
                       ),
                     ),
+                    SizedBox(height: 1),
 
-                    const SizedBox(height: 16),
-
-                    // Email Field
-                    Container(
-                      decoration: BoxDecoration(
+                    // Welcome text
+                    Text(
+                      'NutriTrack',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                      ),
-                      child: TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(
-                            color: Color(0xFF9CA3AF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
+                        letterSpacing: 1.2,
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                      ),
-                      child: TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(
-                            color: Color(0xFF9CA3AF),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
+                    SizedBox(height: 5),
                   ],
                 ),
               ),
+            ),
 
-              const SizedBox(height: 24),
-
-              // Terms and Privacy Checkbox
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      authState.setAgreeToTerms(!authState.agreeToTerms);
-                    },
-                    child: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: authState.agreeToTerms
-                              ? const Color(0xFF91C788)
-                              : const Color(0xFFD1D5DB),
-                          width: 2,
-                        ),
-                        color: authState.agreeToTerms
-                            ? const Color(0xFF91C788)
-                            : Colors.transparent,
-                      ),
-                      child: authState.agreeToTerms
-                          ? const Icon(
-                              Icons.check,
-                              size: 14,
-                              color: Colors.white,
-                            )
-                          : null,
+            // Continue button at the bottom
+            Padding(
+              padding: EdgeInsets.all(24),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Navigate to signup page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF91C788),
+                    elevation: 8,
+                    shadowColor: Colors.black.withOpacity(0.3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'I agree with the Terms of Service & Privacy Policy',
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
                     ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 32),
-
-              // Social Sign In Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: authState.isLoading
-                          ? null
-                          : () {
-                              authState.signInWithGoogle();
-                            },
-                      child: Container(
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'G',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF91C788),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF374151),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: authState.isLoading
-                          ? null
-                          : () {
-                              authState.signInWithFacebook();
-                            },
-                      child: Container(
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'f',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF91C788),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Facebook',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF374151),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 32),
-
-              // Get Started Button (removed arrow)
-              GestureDetector(
-                onTap: authState.isLoading
-                    ? null
-                    : () async {
-                        if (_formKey.currentState!.validate()) {
-                          await authState.register(
-                            _nameController.text.trim(),
-                            _emailController.text.trim(),
-                            _passwordController.text,
-                          );
-                        }
-                      },
-                child: Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF91C788),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: authState.isLoading
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            'Get Started',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Blank Page (new page after successful registration/login)
-class BlankPage extends StatefulWidget {
-  const BlankPage({super.key});
-
-  @override
-  State<BlankPage> createState() => _BlankPageState();
-}
-
-class _BlankPageState extends State<BlankPage> {
-  @override
-  void initState() {
-    super.initState();
-    // Listen to auth state changes
-    authState.addListener(_onAuthStateChanged);
-  }
-
-  @override
-  void dispose() {
-    authState.removeListener(_onAuthStateChanged);
-    super.dispose();
-  }
-
-  void _onAuthStateChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
-      body: SizedBox.expand(),
-    );
-  }
-}
-
-// Home Page (kept for reference, but not used anymore)
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    // Listen to auth state changes
-    authState.addListener(_onAuthStateChanged);
-  }
-
-  @override
-  void dispose() {
-    authState.removeListener(_onAuthStateChanged);
-    super.dispose();
-  }
-
-  void _onAuthStateChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: const Text('NutriTrack Mama'),
-        backgroundColor: const Color(0xFF91C788),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              authState.logout();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFF91C788),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.health_and_safety,
-                size: 50,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 32),
-            const Text(
-              'Welcome to NutriTrack Mama!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF374151),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Hello, ${authState.user}!',
-              style: const TextStyle(fontSize: 18, color: Color(0xFF6B7280)),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                authState.logout();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF91C788),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Text(
-                'Logout',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ],
