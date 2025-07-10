@@ -34,12 +34,13 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Simple validation (replace with real auth logic)
-      if (_emailController.text.isNotEmpty && _passwordController.text.length >= 6) {
+      if (_emailController.text.isNotEmpty &&
+          _passwordController.text.length >= 6) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MenuPage()),
+          MaterialPageRoute(builder: (context) => NutriTrackDashboard()),
         );
       } else {
         throw Exception('Invalid email or password');
@@ -65,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MenuPage()),
+        MaterialPageRoute(builder: (context) => NutriTrackDashboard()),
       );
     } catch (e) {
       setState(() {
@@ -88,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MenuPage()),
+        MaterialPageRoute(builder: (context) => NutriTrackDashboard()),
       );
     } catch (e) {
       setState(() {
@@ -154,10 +155,7 @@ class _LoginPageState extends State<LoginPage> {
 
               const Text(
                 'Sign in to your account',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF6B7280),
-                ),
+                style: TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
               ),
 
               const SizedBox(height: 40),
@@ -343,26 +341,17 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 1,
-                      color: const Color(0xFFE5E7EB),
-                    ),
+                    child: Container(height: 1, color: const Color(0xFFE5E7EB)),
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'Or continue with',
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 14),
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      height: 1,
-                      color: const Color(0xFFE5E7EB),
-                    ),
+                    child: Container(height: 1, color: const Color(0xFFE5E7EB)),
                   ),
                 ],
               ),

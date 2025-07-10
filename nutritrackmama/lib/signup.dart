@@ -156,7 +156,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     if (authState.isLoggedIn) {
-      return const MenuPage(); // Changed from HomePage to BlankPage
+      return NutriTrackDashboard(); // Changed from HomePage to BlankPage
     } else {
       return const SignUpPage();
     }
@@ -523,7 +523,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const MenuPage(),
+                                builder: (context) => NutriTrackDashboard(),
                               ),
                             );
                           }
